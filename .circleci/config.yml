@@ -13,38 +13,56 @@ jobs:
       steps:
         - checkout # check out the code in the project directory
         - run: echo "hello world" # run the `echo` command
-  create_infrastructure:
+  # create_infrastructure:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Create Cloudformation Stack
+  #         command: |
+  #           aws cloudformation deploy \
+  #             --template-file template.yml \
+  #             --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+  #             --region us-east-1
+  # configure_infrastructure:
+  #   docker:
+  #     - image: python:3.7-alpine3.11
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: ["c2:1b:99:60:16:57:11:27:90:8b:92:8b:8f:26:41:e0"]
+  #     - run:
+  #         name: Install Ansible
+  #         command: |
+  #           apk add --update ansible
+  #     - run:
+  #         name: Run Playbook and Configure server
+  #         command: |
+  #           ansible-playbook -i ansible/inventory.txt ansible/main-remote.yml
+  smoke_test:
     docker:
-      - image: amazon/aws-cli
+      - image: alpine:latest
     steps:
-      - checkout
-      - run:
-          name: Create Cloudformation Stack
+      - run: apk add --update curl
+      - run: 
+          name: smoke test
           command: |
-            aws cloudformation deploy \
-              --template-file template.yml \
-              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
-              --region us-east-1
-  configure_infrastructure:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["c2:1b:99:60:16:57:11:27:90:8b:92:8b:8f:26:41:e0"]
-      - run:
-          name: Install Ansible
-          command: |
-            apk add --update ansible
-      - run:
-          name: Run Playbook and Configure server
-          command: |
-            ansible-playbook -i ansible/inventory.txt ansible/main-remote.yml
+            URL="https://blog.udacity.com/"
+            # Test for site presence
+            if curl -s --head ${URL}
+            then
+              return 0
+            else
+              return 1
+            fi
 # Sequential workflow
 workflows:
   # Name the workflow
   myWorkflow:
     jobs:
-      - build
-      - create_infrastructure
-      - configure_infrastructure
+      # - build
+      # - create_infrastructure
+      # - configure_infrastructure
+      - smoke_test
+    
