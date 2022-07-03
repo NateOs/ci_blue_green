@@ -1,5 +1,15 @@
 version: 2.1
 # Use a package of configuration called an orb.
+commands:
+  destroy_environment:
+    steps:
+      - run:
+          name: Destroy environment
+           # ${CIRCLE_WORKFLOW_ID} is a Built-in environment variable 
+           # ${CIRCLE_WORKFLOW_ID:0:5} takes the first 5 chars of the variable CIRCLE_CI_WORKFLOW_ID
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:7}
 orbs:
   # Choose either one of the orbs below
   # welcome: circleci/welcome-orb@0.4.1
@@ -23,7 +33,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file template.yml \
-              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:7} \
               --region us-east-1
   # configure_infrastructure:
   #   docker:
@@ -56,13 +66,8 @@ jobs:
             else
               return 1
             fi
-      - run:
-          name: Destroy environment
-           # ${CIRCLE_WORKFLOW_ID} is a Built-in environment variable 
-           # ${CIRCLE_WORKFLOW_ID:0:5} takes the first 5 chars of the variable CIRCLE_CI_WORKFLOW_ID
-          when: on_fail
-          command: |
-            aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+      - destroy_environment
+      
 
 # Sequential workflow
 workflows:
