@@ -36,7 +36,7 @@ jobs:
           name: Install Ansible
           command: |
             apk add --update ansible
-            ansible-playbook -i 
+            ansible-playbook -i
 # Sequential workflow
 workflows:
   # Name the workflow
@@ -44,3 +44,4 @@ workflows:
     jobs:
       - build
       - create_infrastructure
+      - configure_infrastructure
