@@ -17,13 +17,6 @@ orbs:
   aws-cli: circleci/aws-cli@2.0.3
 # Define the jobs we want to run for this project
 jobs:
-  # build:  # Choose any name, such as `build`
-  #     # The primary container, where your job's commands will run
-  #     docker: 
-  #       - image: cimg/base:2021.04
-  #     steps:
-  #       - checkout # check out the code in the project directory
-  #       - run: echo "hello world" # run the `echo` command
   create_infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -36,39 +29,6 @@ jobs:
               --template-file template.yml \
               --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
               --region us-east-1
-  # configure_infrastructure:
-  #   docker:
-  #     - image: python:3.7-alpine3.11
-  #   steps:
-  #     - checkout
-  #     - add_ssh_keys:
-  #         fingerprints: ["c2:1b:99:60:16:57:11:27:90:8b:92:8b:8f:26:41:e0"]
-  #     - run:
-  #         name: Install Ansible
-  #         command: |
-  #           apk add --update ansible
-  #     - run:
-  #         name: Run Playbook and Configure server
-  #         command: |
-  #           ansible-playbook -i ansible/inventory.txt ansible/main-remote.yml
-  # smoke_test:
-  #   docker:
-  #     - image: alpine:latest
-  #   steps:
-  #     - run: echo myStack-${CIRCLE_WORKFLOW_ID:0:5}
-  #     - run: apk add --update curl
-  #     - run: 
-  #         name: smoke test
-  #         command: |
-  #           URL="https://blog.udacety.com/"
-  #           # Test for site presence
-  #           if curl -s --head ${URL}
-  #           then
-  #             return 0
-  #           else
-  #             return 1
-  #           fi
-  #     - destroy_environment
   create_and_deploy_front_end:
     docker:
       - image: amazon/aws-cli
@@ -81,7 +41,6 @@ jobs:
             --template-file bucket.yml \
             -- stack-name stack-create-bucket-${CIRCLE_WORKFLOW_ID:0:7} \
             -- parameter-overrides MyBucketName="mybucket-${CIRCLE_WORKFLOW_ID:0:7}"
-  # Uncomment the step below if yoou wish to upload all contents of the current directory to the S3 bucket
       - run: aws s3 sync . s3://mybucket-${CIRCLE_WORKFLOW_ID:0:7} --delete
   get_last_deployment_id:
     docker:
