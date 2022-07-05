@@ -92,9 +92,8 @@ workflows:
   # Name the workflow
   myWorkflow:
     jobs:
-      # - build
       - create_infrastructure
-      # - configure_infrastructure
+      - create_and_deploy_front_end
       - promote_to_production:
           requires:
             - create_and_deploy_front_end
