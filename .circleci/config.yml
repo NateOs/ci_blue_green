@@ -51,24 +51,24 @@ jobs:
   #         name: Run Playbook and Configure server
   #         command: |
   #           ansible-playbook -i ansible/inventory.txt ansible/main-remote.yml
-  smoke_test:
-    docker:
-      - image: alpine:latest
-    steps:
-      - run: echo myStack-${CIRCLE_WORKFLOW_ID:0:5}
-      - run: apk add --update curl
-      - run: 
-          name: smoke test
-          command: |
-            URL="https://blog.udacety.com/"
-            # Test for site presence
-            if curl -s --head ${URL}
-            then
-              return 0
-            else
-              return 1
-            fi
-      - destroy_environment
+  # smoke_test:
+  #   docker:
+  #     - image: alpine:latest
+  #   steps:
+  #     - run: echo myStack-${CIRCLE_WORKFLOW_ID:0:5}
+  #     - run: apk add --update curl
+  #     - run: 
+  #         name: smoke test
+  #         command: |
+  #           URL="https://blog.udacety.com/"
+  #           # Test for site presence
+  #           if curl -s --head ${URL}
+  #           then
+  #             return 0
+  #           else
+  #             return 1
+  #           fi
+  #     - destroy_environment
   create_and_deploy_front_end:
     docker:
       - image: amazon/aws-cli
